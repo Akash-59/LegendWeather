@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Legend Weather App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #1a1a1a;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    nav {
+      background: #111;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 40px;
+      box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo img {
+      width: 38px;
+      height: 38px;
+    }
+
+    .logo span {
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: #00ffe5;
+    }
+
+    .links a {
+      margin-left: 20px;
+      text-decoration: none;
+      color: #ccc;
+      transition: color 0.3s ease;
+    }
+
+    .links a:hover {
+      color: white;
+    }
+
+    .weather-section {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 60px 20px;
+    }
+
+    .glass-panel {
+      background: #222;
+      border-radius: 20px;
+      padding: 40px;
+      width: 100%;
+      max-width: 700px;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+      text-align: center;
+      border: 1px solid #333;
+    }
+
+    .glow-title {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      color: white;
+      text-shadow: none;
+    }
+
+    .tagline {
+      font-size: 1rem;
+      color: #aaa;
+      margin-bottom: 25px;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    .input-group input {
+      flex: 1;
+      padding: 14px;
+      border-radius: 12px;
+      border: 2px solid #00f7ff;
+      background: #333;
+      color: white;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: #00f7ff;
+      box-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
+    }
+
+    .input-group button {
+      padding: 14px 24px;
+      border-radius: 12px;
+      background: #00f7ff;
+      border: none;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .input-group button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 12px rgba(0, 255, 255, 0.5);
+    }
+
+    .results-grid {
+      display: grid;
+      gap: 20px;
+    }
+
+    .results-grid .card {
+      background: #111;
+      border-left: 4px solid #00ffcc;
+      padding: 18px 20px;
+      border-radius: 12px;
+      text-align: left;
+    }
+
+    .results-grid .card img {
+      width: 40px;
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+
+    .results-grid .card.error {
+      border-left: 4px solid #ff4e50;
+      color: #ffb3b3;
+    }
+
+    .results-grid .card.warning {
+      border-left: 4px solid #ffcc00;
+      color: #fff8d1;
+    }
+
+    footer.legend-footer {
+      background: #00ffe5;
+      padding: 40px 20px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: #111;
+      box-shadow: 0 -10px 25px rgba(0, 255, 255, 0.2);
+    }
+
+    footer a {
+      color: #111;
+      text-decoration: underline;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- 🔥 Header -->
+  <nav>
+    <div class="logo">
+      <img src="https://cdn-icons-png.flaticon.com/512/1163/1163661.png" alt="Logo">
+      <span>LegendWeather</span>
+    </div>
+    <div class="links">
+      <a href="#">Home</a>
+      <a href="#">Weather</a>
+      <a href="#">Forecast</a>
+      <a href="#">About</a>
+    </div>
+  </nav>
+
+  <!-- 🔮 Weather Input + Output -->
+  <section class="weather-section">
+    <div class="glass-panel">
+      <h1 class="glow-title">🌦️ Real-Time Weather Dashboard</h1>
+      <p class="tagline">Enter multiple cities to get instant, real-time weather updates</p>
+      <div class="input-group">
+        <input type="text" id="cityInput" placeholder="e.g. New York, Tokyo, Berlin">
+        <button onclick="checkWeather()">🔍 Check Weather</button>
+      </div>
+      <div class="results-grid" id="results"></div>
+    </div>
+  </section>
+
+  <!-- 💎 Footer -->
+  <footer class="legend-footer">
+    <p>🌐 Powered by <strong>Ak Rathore</strong> • <a href="mailto:khokher.akumar59@gmail.com">khokher.akumar59@gmail.com</a></p>
+    <p>© 2025 LegendWeather. All Rights Reserved. 🚀</p>
+  </footer>
+
+  <!-- ⚙️ Weather Script -->
+  <script>
+    const API_KEY = "94ff70670e46192c542f6a5754f7c43f";
+
+    async function checkWeather() {
+      const input = document.getElementById('cityInput').value;
+      const cities = input.split(',').map(c => c.trim()).filter(c => c);
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+
+      for (let city of cities) {
+        try {
+          const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`);
+          const data = await res.json();
+
+          if (data.cod !== 200) {
+            resultsDiv.innerHTML += `<div class="card error">❌ ${city}: ${data.message}</div>`;
+            continue;
+          }
+
+          const temp = data.main.temp;
+          const description = data.weather[0].description;
+          const icon = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+
+          resultsDiv.innerHTML += `
+            <div class="card">
+              <img src="${icon}" alt="icon"><strong>${city}</strong>: ${temp}&deg;C, ${description}
+            </div>`;
+
+          if (temp > 40) {
+            resultsDiv.innerHTML += `<div class="card warning">⚠️ Warning: High temperature in ${city}. Stopping checks.</div>`;
+            break;
+          }
+        } catch (err) {
+          resultsDiv.innerHTML += `<div class="card error">❌ ${city}: ${err.message}</div>`;
+        }
+      }
+    }
+  </script>
+
+</body>
+</html>
