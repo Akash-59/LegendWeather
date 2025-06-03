@@ -2,7 +2,8 @@
 
 A sleek, real-time weather dashboard that allows users to check weather conditions for multiple cities simultaneously.
 
-![Weather App Screenshot](https://i.imgur.com/placeholder.png) *(Replace with actual screenshot)*
+<img width="937" alt="image" src="https://github.com/user-attachments/assets/51f2475f-d43c-4af0-959e-d22557a0671a" />
+
 
 ## Features ✨
 
